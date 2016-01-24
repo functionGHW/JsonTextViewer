@@ -34,8 +34,8 @@ namespace JsonTextViewer
             vm.ResponseText = "Press Enter to send request";
             vm.Url = "http://www.example.com/";
             vm.RequestBody = "# Lines start with '#' are comments and will be ignored.\n" +
-                             "# Add your request body for Post or Put here.\n" +
-                             "# Default type of the content is text,\n" +
+                             "# Add your message body for Post or Put here.\n" +
+                             "# Default type of the body is text,\n" +
                              "# you can change it by add a line \":: {type}\" as the first valid line of the content.\n" +
                              "# The type can be one of { text, form, json }\n" + 
                              "# Form content example:\n" +

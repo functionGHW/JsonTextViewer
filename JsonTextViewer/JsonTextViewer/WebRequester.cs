@@ -29,10 +29,17 @@ namespace JsonTextViewer
                 throw new ArgumentNullException(nameof(method));
             try
             {
-                var request = new HttpRequestMessage(new HttpMethod(method), url)
+                var request = new HttpRequestMessage(new HttpMethod(method), url);
+
+                switch (method.ToLowerInvariant())
                 {
-                    Content = content ?? EmptyContent
-                };
+                    // only post and put request can has a message body
+                    case "post":
+                    case "put":
+                        request.Content = content ?? EmptyContent;
+                        break;
+                }
+
                 using (var client = new HttpClient())
                 {
 
@@ -42,11 +49,16 @@ namespace JsonTextViewer
                             $"Http {(int)response.StatusCode} {response.ReasonPhrase}\n{response.Content.ReadAsStringAsync().Result}";
 
                     var rContent = response.Content;
-                    
-                    string type = rContent.Headers.ContentType.MediaType.ToLowerInvariant();
-                    if (type.Contains("json"))
+
+                    if (rContent == null)
                     {
-                        return ReadAsJson(content);
+                        return "null";
+                    }
+
+                    string type = rContent.Headers?.ContentType?.MediaType?.ToLowerInvariant();
+                    if (type != null && type.Contains("json"))
+                    {
+                        return ReadAsJson(rContent);
                     }
                     return rContent.ReadAsStringAsync().Result;
                 }
@@ -60,7 +72,7 @@ namespace JsonTextViewer
         private string ReadAsJson(HttpContent content)
         {
             string json = content.ReadAsStringAsync().Result;
-            var obj = JsonConvert.DeserializeObject<JObject>(json);
+            var obj = JsonConvert.DeserializeObject(json);
             return obj?.ToString() ?? "null";
         }
     }

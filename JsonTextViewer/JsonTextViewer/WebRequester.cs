@@ -14,11 +14,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace JsonTextViewer
 {
     public class WebRequester : IWebRequester
     {
+        static WebRequester()
+        {
+            // ignore SSL certificate, this may result to AuthenticationException exception.
+            ServicePointManager
+                .ServerCertificateValidationCallback +=
+                (sender, cert, chain, sslPolicyErrors) => true;
+        }
+
         private static readonly HttpContent EmptyContent = new ByteArrayContent(new byte[0]);
 
         public string SendRequest(string url, string method, HttpContent content = null)
@@ -42,7 +51,6 @@ namespace JsonTextViewer
 
                 using (var client = new HttpClient())
                 {
-
                     var response = client.SendAsync(request).Result;
                     if (!response.IsSuccessStatusCode)
                         return

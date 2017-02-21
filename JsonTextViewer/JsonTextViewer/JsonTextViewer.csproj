@@ -62,8 +62,10 @@
     </ApplicationDefinition>
     <Compile Include="IWebRequester.cs" />
     <Compile Include="JsonContent.cs" />
+    <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="SimpleCommand.cs" />
-    <Compile Include="ViewModel.cs" />
+    <Compile Include="PageViewModel.cs" />
+    <Compile Include="ViewModelBase.cs" />
     <Compile Include="WebRequester.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

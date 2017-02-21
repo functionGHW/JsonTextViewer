@@ -19,7 +19,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JsonTextViewer
 {
-    public class ViewModel : INotifyPropertyChanged
+    public class PageViewModel : ViewModelBase
     {
         private readonly IWebRequester requester;
         private string url;
@@ -27,11 +27,11 @@ namespace JsonTextViewer
         private string requestBody;
         private string responseText;
 
-        public ViewModel() : this(new WebRequester())
+        public PageViewModel() : this(new WebRequester())
         {
         }
 
-        public ViewModel(IWebRequester requester)
+        public PageViewModel(IWebRequester requester)
         {
             if (requester == null)
                 throw new ArgumentNullException(nameof(requester));
@@ -112,7 +112,7 @@ namespace JsonTextViewer
                 return null;
 
             string[] lines = body.Split('\n');
-            
+
             var validLines = (from line in lines
                               let s = line.Trim()
                               where s.FirstOrDefault() != '#'
@@ -165,7 +165,7 @@ namespace JsonTextViewer
         private JsonContent AsJsonContent(IEnumerable<string> text)
         {
             string json = string.Concat(text);
-            var obj =  JsonConvert.DeserializeObject<JObject>(json);
+            var obj = JsonConvert.DeserializeObject<JObject>(json);
             return new JsonContent(obj);
         }
 
@@ -174,16 +174,6 @@ namespace JsonTextViewer
             return new StringContent(string.Join("\n", text));
         }
 
-        #region INotifyPropertyChanged Implemenetation
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propName = null)
-        {
-            var events = PropertyChanged;
-            events?.Invoke(this, new PropertyChangedEventArgs(propName));
-        }
-
-        #endregion
+        
     }
 }

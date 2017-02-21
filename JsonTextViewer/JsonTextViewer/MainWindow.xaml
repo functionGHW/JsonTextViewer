@@ -7,51 +7,54 @@
         xmlns:local="clr-namespace:JsonTextViewer"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="600" Width="800">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" MinWidth="320" MinHeight="200" VerticalAlignment="Center">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="75"/>
-                <ColumnDefinition Width="*" MinWidth="200" />
-                <ColumnDefinition Width="100" />
-            </Grid.ColumnDefinitions>
-            <ComboBox Grid.Column="0" 
+    <Window.Resources>
+        <DataTemplate x:Key="taskTemplate">
+            <Grid DataContext="{Binding}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" MinWidth="320" MinHeight="200" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="75"/>
+                        <ColumnDefinition Width="*" MinWidth="200" />
+                        <ColumnDefinition Width="100" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0" 
                       Margin="8,0,0,0" 
                       Height="25" 
                       SelectedItem="{Binding Method}">
-                <ComboBox.Items>
-                    <sys:String>Get</sys:String>
-                    <sys:String>Post</sys:String>
-                    <sys:String>Put</sys:String>
-                    <sys:String>Delete</sys:String>
-                </ComboBox.Items>
-            </ComboBox>
+                        <ComboBox.Items>
+                            <sys:String>Get</sys:String>
+                            <sys:String>Post</sys:String>
+                            <sys:String>Put</sys:String>
+                            <sys:String>Delete</sys:String>
+                        </ComboBox.Items>
+                    </ComboBox>
 
-            <TextBox Grid.Column="1" 
+                    <TextBox Grid.Column="1" 
                      Margin="8,0,0,0" 
                      MinWidth="200" 
                      Height="25"
                      Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <Button Grid.Column="2" 
+                    <Button Grid.Column="2" 
                     Margin="8,0,8,0" 
                     Content="Send(Enter)" 
                     Height="25" 
                     IsDefault="True"
                     Command="{Binding SendRequestCommand}"/>
-        </Grid>
+                </Grid>
 
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="250" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="250" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-            <TextBox Grid.Row="0"
+                    <TextBox Grid.Row="0"
                      AcceptsReturn="True" 
                      AcceptsTab="True"
                      TextWrapping="Wrap"
@@ -60,7 +63,7 @@
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      Text="{Binding RequestBody}"/>
 
-            <TextBox Grid.Row="1" 
+                    <TextBox Grid.Row="1" 
                      VerticalAlignment="Stretch" 
                      HorizontalAlignment="Stretch" 
                      IsReadOnly="True"
@@ -70,6 +73,31 @@
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      Text="{Binding ResponseText}"/>
 
-        </Grid>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Content="Add Page" Command="{Binding AddPageCommand}"/>
+        </StackPanel>
+        
+        <TabControl Grid.Row="1" ItemsSource="{Binding TaskList}" ContentTemplate="{StaticResource taskTemplate}" SelectedIndex="0">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Url}" MinWidth="20" MaxWidth="100" ToolTip="{Binding Url}"/>
+                        <Button Margin="5,0,0,0" Width="15" Content="X" Command="{Binding DataContext.ClosePageCommand, RelativeSource={RelativeSource AncestorType=TabControl}}" CommandParameter="{Binding}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+        </TabControl>
     </Grid>
 </Window>

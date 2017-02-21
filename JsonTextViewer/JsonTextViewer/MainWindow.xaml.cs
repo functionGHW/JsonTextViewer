@@ -27,21 +27,9 @@ namespace JsonTextViewer
             var ver = this.GetType().Assembly.GetName().Version;
             string version = $"v{ver.Major}.{ver.Minor}";
             Title = $"Json Text Viewer {version}";
-            var vm = new ViewModel();
-            DataContext = vm;
-
-            vm.Method = "Get";
-            vm.ResponseText = "Press Enter to send request";
-            vm.Url = "http://www.example.com/";
-            vm.RequestBody = "# Lines start with '#' are comments and will be ignored.\n" +
-                             "# Add your message body for Post or Put here.\n" +
-                             "# Default type of the body is text,\n" +
-                             "# you can change it by add a line \":: {type}\" as the first valid line of the content.\n" +
-                             "# The type can be one of { text, form, json }\n" + 
-                             "# Form content example:\n" +
-                             "#     :: form\n" +
-                             "#     name=John\n" +
-                             "#     Age=23\n";
+           
+            DataContext = new MainWindowViewModel();
+            
         }
     }
 }

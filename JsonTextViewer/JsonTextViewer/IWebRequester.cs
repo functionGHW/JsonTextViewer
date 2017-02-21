@@ -17,6 +17,6 @@ namespace JsonTextViewer
 {
     public interface IWebRequester
     {
-        string SendRequest(string url, string method, HttpContent content);
+        string SendRequest(string url, string method, HttpContent content, Dictionary<string, string> headers);
     }
 }

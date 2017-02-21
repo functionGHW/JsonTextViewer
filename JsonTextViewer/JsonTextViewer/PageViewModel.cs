@@ -100,14 +100,23 @@ namespace JsonTextViewer
             ResponseText = "Handling...";
             Task.Run(() =>
             {
-                var param = ParseBody(RequestBody);
-                ResponseText = requester.SendRequest(Url, Method, param);
+                Dictionary<string, string> headers;
+                try
+                {
+                    var param = ParseBody(RequestBody, out headers);
+                    ResponseText = requester.SendRequest(Url, Method, param, headers);
+                }
+                catch (JsonException ex)
+                {
+                    ResponseText = $"Request body format ERROR!\n\n{ex.Message}";
+                }
             });
         }
 
 
-        private HttpContent ParseBody(string body)
+        private HttpContent ParseBody(string body, out Dictionary<string,string> headers)
         {
+            headers = null;
             if (body == null)
                 return null;
 
@@ -121,59 +130,58 @@ namespace JsonTextViewer
             if (!validLines.Any())
                 return null;
 
-            string firstLine = validLines.FirstOrDefault(line => line.Trim().Length > 0);
+            var input =  JsonConvert.DeserializeObject<InputBody>(string.Concat(validLines));
+            if (input == null)
+                return null;
 
-            string contentType = "text";
-            if (firstLine != null && firstLine.StartsWith("::"))
-            {
-                contentType = firstLine.Substring(2).Trim().ToLowerInvariant();
-                validLines.Remove(firstLine);
-            }
-
-            switch (contentType)
+            headers = input.Headers;
+            switch (input.Type)
             {
                 case "form":
-                    return AsFormContent(validLines.Select(line => line.Trim())
-                                                    .Where(line => line.Length > 0));
+                    return AsFormContent(input);
                 case "json":
-                    return AsJsonContent(validLines.Select(line => line.Trim())
-                                                    .Where(line => line.Length > 0));
+                    return AsJsonContent(input);
                 case "text":
-                    return AsTextContent(validLines);
+                    return AsTextContent(input);
             }
 
             return null;
         }
 
-        private FormUrlEncodedContent AsFormContent(IEnumerable<string> text)
+        private FormUrlEncodedContent AsFormContent(InputBody input)
         {
-            var dict = new Dictionary<string, string>();
-            foreach (string line in text)
-            {
-                string[] kv = line.Split(new[] { '=' }, 2);
-                if (kv.Length < 2)
-                    continue;
+            if (input.Body == null)
+                return null;
 
-                string name = kv[0].Trim();
-                string value = kv[1].Trim();
-
-                dict.Add(name, value);
-            }
+            var dict = input.Body?.ToObject<Dictionary<string, string>>();
             return new FormUrlEncodedContent(dict);
         }
 
-        private JsonContent AsJsonContent(IEnumerable<string> text)
+        private JsonContent AsJsonContent(InputBody input)
         {
-            string json = string.Concat(text);
-            var obj = JsonConvert.DeserializeObject<JObject>(json);
-            return new JsonContent(obj);
+            if (input.Body == null)
+                return null;
+
+            return new JsonContent(input.Body);
         }
 
-        private StringContent AsTextContent(IEnumerable<string> text)
+        private StringContent AsTextContent(InputBody input)
         {
-            return new StringContent(string.Join("\n", text));
+            if (input.Body == null)
+                return null;
+
+            return new StringContent(input.Body.ToString());
         }
 
         
+    }
+
+    public class InputBody
+    {
+        public string Type { get; set; }
+
+        public Dictionary<string, string> Headers { get; set; }
+
+        public JToken Body { get; set; }
     }
 }

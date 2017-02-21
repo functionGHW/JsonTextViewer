@@ -81,11 +81,11 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="25"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Add Page" Command="{Binding AddPageCommand}"/>
         </StackPanel>
         

@@ -55,14 +55,17 @@ namespace JsonTextViewer
             vm.ResponseText = "Press Enter to send request";
             vm.Url = "http://www.example.com/";
             vm.RequestBody = "# Lines start with '#' are comments and will be ignored.\n" +
-                             "# Add your message body for Post or Put here.\n" +
-                             "# Default type of the body is text,\n" +
-                             "# you can change it by add a line \":: {type}\" as the first valid line of the content.\n" +
-                             "# The type can be one of { text, form, json }\n" +
-                             "# Form content example:\n" +
-                             "#     :: form\n" +
-                             "#     name=John\n" +
-                             "#     Age=23\n";
+                             "# Using JSON object to add headers and create request body.\n\n" +
+                             "{\n" +
+                             "    headers: {\n" +
+                             "        # additional headers\n"+
+                             "    },\n" +
+                             "    # type can be one of { text, form, json }\n" +
+                             "    type: \"form\",\n" +
+                             "    # for text content, using string replace object \n" +
+                             "    body:{\n" +
+                             "    }\n" +
+                             "}";
             return vm;
         }
     }

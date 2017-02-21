@@ -30,16 +30,24 @@ namespace JsonTextViewer
 
         private static readonly HttpContent EmptyContent = new ByteArrayContent(new byte[0]);
 
-        public string SendRequest(string url, string method, HttpContent content = null)
+        public string SendRequest(string url, string method, HttpContent content = null, Dictionary<string,string> headers = null)
         {
             if (url == null)
                 throw new ArgumentNullException(nameof(url));
             if (method == null)
                 throw new ArgumentNullException(nameof(method));
+
             try
             {
                 var request = new HttpRequestMessage(new HttpMethod(method), url);
 
+                if (headers != null)
+                {
+                    foreach (var item in headers)
+                    {
+                        request.Headers.Add(item.Key, item.Value);
+                    }
+                }
                 switch (method.ToLowerInvariant())
                 {
                     // only post and put request can has a message body

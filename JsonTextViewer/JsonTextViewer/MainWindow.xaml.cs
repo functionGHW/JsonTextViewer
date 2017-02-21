@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -28,8 +29,13 @@ namespace JsonTextViewer
             string version = $"v{ver.Major}.{ver.Minor}";
             Title = $"Json Text Viewer {version}";
            
-            DataContext = new MainWindowViewModel();
-            
+            DataContext = new MainWindowViewModel();    
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            UrlHistoriesManager.Instance.SaveToFile();
         }
     }
 }

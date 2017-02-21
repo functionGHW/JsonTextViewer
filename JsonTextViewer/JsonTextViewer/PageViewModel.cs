@@ -105,6 +105,7 @@ namespace JsonTextViewer
                 {
                     var param = ParseBody(RequestBody, out headers);
                     ResponseText = requester.SendRequest(Url, Method, param, headers);
+                    UrlHistoriesManager.Instance.RefreshUrl(Url);
                 }
                 catch (JsonException ex)
                 {

@@ -24,7 +24,7 @@
                     </Grid.ColumnDefinitions>
                     <ComboBox Grid.Column="0" 
                       Margin="8,0,0,0" 
-                      Height="25" 
+                      Height="25"
                       SelectedItem="{Binding Method}">
                         <ComboBox.Items>
                             <sys:String>Get</sys:String>
@@ -34,11 +34,13 @@
                         </ComboBox.Items>
                     </ComboBox>
 
-                    <TextBox Grid.Column="1" 
-                     Margin="8,0,0,0" 
-                     MinWidth="200" 
-                     Height="25"
-                     Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ComboBox Grid.Column="1"
+                              Margin="8,0,0,0" 
+                              MinWidth="200" 
+                              Height="25" ItemsSource="{Binding DataContext.UrlHistories, 
+                        RelativeSource={RelativeSource AncestorType=Window}}"
+                              IsEditable="True"
+                              Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <Button Grid.Column="2" 
                     Margin="8,0,8,0" 
@@ -88,7 +90,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Add Page" Command="{Binding AddPageCommand}"/>
         </StackPanel>
-        
+
         <TabControl Grid.Row="1" ItemsSource="{Binding TaskList}" ContentTemplate="{StaticResource taskTemplate}" SelectedIndex="0">
             <TabControl.ItemTemplate>
                 <DataTemplate>

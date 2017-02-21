@@ -26,8 +26,17 @@ namespace JsonTextViewer
 
             ClosePageCommand = new SimpleCommand(ClosePageCommandAction);
             AddPageCommand = new SimpleCommand(AddPageCommandAction);
-            
+
+            UrlHistories = UrlHistoriesManager.Instance.UrlHistories;
+
+            UrlHistoriesManager.Instance.UrlHistoriesUpdated += (o, e) =>
+            {
+                UrlHistories = UrlHistoriesManager.Instance.UrlHistories.ToList();
+                OnPropertyChanged(nameof(UrlHistories));
+            };
         }
+
+        public IList<string> UrlHistories { get; set; }
 
         public ObservableCollection<PageViewModel> TaskList { get; set; }
 
@@ -53,12 +62,12 @@ namespace JsonTextViewer
             var vm = new PageViewModel();
             vm.Method = "Get";
             vm.ResponseText = "Press Enter to send request";
-            vm.Url = "http://www.example.com/";
+            vm.Url = UrlHistoriesManager.Instance.UrlHistories.FirstOrDefault() ?? "http://www.example.com/";
             vm.RequestBody = "# Lines start with '#' are comments and will be ignored.\n" +
                              "# Using JSON object to add headers and create request body.\n\n" +
                              "{\n" +
                              "    headers: {\n" +
-                             "        # additional headers\n"+
+                             "        # additional headers\n" +
                              "    },\n" +
                              "    # type can be one of { text, form, json }\n" +
                              "    type: \"form\",\n" +

@@ -26,6 +26,13 @@ namespace JsonTextViewer
             ServicePointManager
                 .ServerCertificateValidationCallback +=
                 (sender, cert, chain, sslPolicyErrors) => true;
+
+            // add all protocols
+            ServicePointManager.SecurityProtocol = 
+                SecurityProtocolType.Tls12 
+                | SecurityProtocolType.Tls11 
+                | SecurityProtocolType.Tls 
+                | SecurityProtocolType.Ssl3;
         }
 
         private static readonly HttpContent EmptyContent = new ByteArrayContent(new byte[0]);

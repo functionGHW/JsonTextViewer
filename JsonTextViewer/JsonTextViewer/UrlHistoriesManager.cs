@@ -19,16 +19,26 @@ namespace JsonTextViewer
     public sealed class UrlHistoriesManager
     {
 
+        static UrlHistoriesManager()
+        {
+            string localApp = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appDataDir = Path.Combine(localApp, "JsonTextViewer");
+            Directory.CreateDirectory(appDataDir);
+            historyFilePath = Path.Combine(appDataDir, "urlhistories.txt");
+
+            Instance = new UrlHistoriesManager();
+        }
+
         public event EventHandler UrlHistoriesUpdated;
 
-        public static readonly UrlHistoriesManager Instance = new UrlHistoriesManager();
+        public static readonly UrlHistoriesManager Instance;
 
         private UrlHistoriesManager()
         {
             LoadOrCreateFile();
         }
 
-        private const string historyFilePath = "history.txt";
+        private static readonly string historyFilePath;
 
         private const int maxRecordCount = 50;
 

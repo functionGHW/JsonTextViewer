@@ -72,7 +72,16 @@ namespace JsonTextViewer
                              "    # type can be one of { text, form, json }\n" +
                              "    type: \"form\",\n" +
                              "    # for text content, using string replace object \n" +
-                             "    body:{\n" +
+                             "    body: {\n" +
+                             "    },\n" +
+                             "    # for file uploading when type is form\n" + 
+                             "    file: {\n" +
+                             "        # name is required\n" + 
+                             "        #name: \"picture\",\n" +
+                             "        # path is required\n" +
+                             "        #path: \"c:\\\\dir_to_file\\\\file_name.jpg\",\n" +
+                             "        # filename is optional\n" +
+                             "        #filename: \"example.jpg\"\n" +
                              "    }\n" +
                              "}";
             return vm;

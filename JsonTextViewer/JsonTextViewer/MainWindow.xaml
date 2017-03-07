@@ -6,7 +6,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:JsonTextViewer"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="600" Width="800">
+        Title="MainWindow" Height="700" Width="800">
 
     <Window.Resources>
         <DataTemplate x:Key="taskTemplate">
@@ -52,7 +52,7 @@
 
                 <Grid Grid.Row="1">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="250" />
+                        <RowDefinition Height="350" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 

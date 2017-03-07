@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace JsonTextViewer
 {
@@ -111,11 +112,15 @@ namespace JsonTextViewer
                 {
                     ResponseText = $"Request body format ERROR!\n\n{ex.Message}";
                 }
+                catch (Exception ex)
+                {
+                    ResponseText = $"Something is wrong:\n\n{ex.Message}";
+                }
             });
         }
 
 
-        private HttpContent ParseBody(string body, out Dictionary<string,string> headers)
+        private HttpContent ParseBody(string body, out Dictionary<string, string> headers)
         {
             headers = null;
             if (body == null)
@@ -131,7 +136,7 @@ namespace JsonTextViewer
             if (!validLines.Any())
                 return null;
 
-            var input =  JsonConvert.DeserializeObject<InputBody>(string.Concat(validLines));
+            var input = JsonConvert.DeserializeObject<InputBody>(string.Concat(validLines));
             if (input == null)
                 return null;
 
@@ -149,16 +154,43 @@ namespace JsonTextViewer
             return null;
         }
 
-        private FormUrlEncodedContent AsFormContent(InputBody input)
+        private HttpContent AsFormContent(InputBody input)
         {
             if (input.Body == null)
                 return null;
 
-            var dict = input.Body?.ToObject<Dictionary<string, string>>();
-            return new FormUrlEncodedContent(dict);
+            // no file to upload, using FormUrlEncodedContent
+            if (input.File == null || string.IsNullOrEmpty(input.File.Name))
+            {
+                var dict = input.Body?.ToObject<Dictionary<string, string>>();
+                return new FormUrlEncodedContent(dict);
+            }
+            else
+            {
+                // try to upload file using MultipartFormDataContent
+                var file = input.File;
+                if (string.IsNullOrEmpty(file.Name))
+                    throw new InvalidDataException("file.name must be given, and value can't be null or empty.");
+
+                if (!File.Exists(file.Path))
+                    throw new InvalidDataException("file.path is wrong, file not exists.");
+
+                if (string.IsNullOrEmpty(file.FileName))
+                    file.FileName = Path.GetFileName(file.Path);
+
+                var content = new MultipartFormDataContent();
+
+                var dict = input.Body?.ToObject<Dictionary<string, string>>();
+                content.Add(new FormUrlEncodedContent(dict));
+
+                var fileContent = new StreamContent(File.OpenRead(file.Path));
+                content.Add(fileContent, file.Name, file.FileName);
+
+                return content;
+            }
         }
 
-        private JsonContent AsJsonContent(InputBody input)
+        private HttpContent AsJsonContent(InputBody input)
         {
             if (input.Body == null)
                 return null;
@@ -166,7 +198,7 @@ namespace JsonTextViewer
             return new JsonContent(input.Body);
         }
 
-        private StringContent AsTextContent(InputBody input)
+        private HttpContent AsTextContent(InputBody input)
         {
             if (input.Body == null)
                 return null;
@@ -174,7 +206,7 @@ namespace JsonTextViewer
             return new StringContent(input.Body.ToString());
         }
 
-        
+
     }
 
     public class InputBody
@@ -184,5 +216,16 @@ namespace JsonTextViewer
         public Dictionary<string, string> Headers { get; set; }
 
         public JToken Body { get; set; }
+
+        public FileData File { get; set; }
+    }
+
+    public class FileData
+    {
+        public string Name { get; set; }
+
+        public string Path { get; set; }
+
+        public string FileName { get; set; }
     }
 }

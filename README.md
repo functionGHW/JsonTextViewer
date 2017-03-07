@@ -13,7 +13,8 @@ For requests using POST or PUT, you can also send data by write it as "body";
 
 1. Lines start with '#' as the first non-white space character are comments, these lines will be ignored.
 2. If you don't nedd headers, keep it empty, or just remove it from json.
-3. The type can be one of { text, form(application/x-www-form-urlencoded), json(application/json) }.
+3. The type can be one of { text, form, json(application/json) }.
+4. The 'form' support file uploading, by enable the 'file' block.
 
 Example for text
 <pre>
@@ -41,6 +42,26 @@ Example for form:
         }
     }
 </pre>
+
+
+Example for form(file uploading):
+<pre>
+    {
+        headers: null
+        # type can be one of { text, form, json }
+        type: "form",
+        body: {
+            name: "John",
+            age: 23
+        },
+        file: {
+            name: "picture",
+            path: "c:\\dir_to_file\\file_name.jpg",
+            filename: "example.jpg"
+        }
+    }
+</pre>
+
 Example for json:
 <pre>
     {

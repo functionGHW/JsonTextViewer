@@ -81,7 +81,9 @@ namespace JsonTextViewer
                              "        # path is required\n" +
                              "        #path: \"c:\\\\dir_to_file\\\\file_name.jpg\",\n" +
                              "        # filename is optional\n" +
-                             "        #filename: \"example.jpg\"\n" +
+                             "        #filename: \"example.jpg\",\n" +
+                             "        # type is optional\n" +
+                             "        #type: \"application/octet-stream\"\n" +
                              "    }\n" +
                              "}";
             return vm;

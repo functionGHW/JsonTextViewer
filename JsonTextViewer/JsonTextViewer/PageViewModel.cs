@@ -17,6 +17,7 @@ using System.Windows.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Net.Http.Headers;
 
 namespace JsonTextViewer
 {
@@ -156,7 +157,7 @@ namespace JsonTextViewer
 
         private HttpContent AsFormContent(InputBody input)
         {
-            if (input.Body == null)
+            if (input.Body == null && input.File == null)
                 return null;
 
             // no file to upload, using FormUrlEncodedContent
@@ -181,9 +182,18 @@ namespace JsonTextViewer
                 var content = new MultipartFormDataContent();
 
                 var dict = input.Body?.ToObject<Dictionary<string, string>>();
-                content.Add(new FormUrlEncodedContent(dict));
-
+                if (dict != null)
+                {
+                    foreach (var item in dict)
+                    {
+                        content.Add(new StringContent(item.Value), item.Key);
+                    }
+                }
                 var fileContent = new StreamContent(File.OpenRead(file.Path));
+                if (!string.IsNullOrEmpty(file.Type))
+                {
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.Type);
+                }
                 content.Add(fileContent, file.Name, file.FileName);
 
                 return content;
@@ -220,6 +230,7 @@ namespace JsonTextViewer
         public FileData File { get; set; }
     }
 
+    // for uploading file 
     public class FileData
     {
         public string Name { get; set; }
@@ -227,5 +238,7 @@ namespace JsonTextViewer
         public string Path { get; set; }
 
         public string FileName { get; set; }
+
+        public string Type { get; set; }
     }
 }

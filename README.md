@@ -57,7 +57,8 @@ Example for form(file uploading):
         file: {
             name: "picture",
             path: "c:\\dir_to_file\\file_name.jpg",
-            filename: "example.jpg"
+            filename: "example.jpg",
+            type: "image/jpg"
         }
     }
 </pre>

@@ -28,16 +28,16 @@ namespace JsonTextViewer
                 (sender, cert, chain, sslPolicyErrors) => true;
 
             // add all protocols
-            ServicePointManager.SecurityProtocol = 
-                SecurityProtocolType.Tls12 
-                | SecurityProtocolType.Tls11 
-                | SecurityProtocolType.Tls 
+            ServicePointManager.SecurityProtocol =
+                SecurityProtocolType.Tls12
+                | SecurityProtocolType.Tls11
+                | SecurityProtocolType.Tls
                 | SecurityProtocolType.Ssl3;
         }
 
         private static readonly HttpContent EmptyContent = new ByteArrayContent(new byte[0]);
 
-        public string SendRequest(string url, string method, HttpContent content = null, Dictionary<string,string> headers = null)
+        public string SendRequest(string url, string method, HttpContent content = null, Dictionary<string, string> headers = null)
         {
             if (url == null)
                 throw new ArgumentNullException(nameof(url));
@@ -67,19 +67,19 @@ namespace JsonTextViewer
                 using (var client = new HttpClient())
                 {
                     var response = client.SendAsync(request).Result;
-                    if (!response.IsSuccessStatusCode)
-                        return
-                            $"Http {(int)response.StatusCode} {response.ReasonPhrase}\n{response.Content.ReadAsStringAsync().Result}";
-
                     var rContent = response.Content;
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string textContent = IsJsonContent(rContent) ? ReadAsJson(rContent) : rContent.ReadAsStringAsync().Result;
+                        return $"Http {(int)response.StatusCode} {response.ReasonPhrase}\n{textContent}";
+                    }
 
                     if (rContent == null)
                     {
                         return "null";
                     }
 
-                    string type = rContent.Headers?.ContentType?.MediaType?.ToLowerInvariant();
-                    if (type != null && type.Contains("json"))
+                    if (IsJsonContent(rContent))
                     {
                         return ReadAsJson(rContent);
                     }
@@ -90,6 +90,12 @@ namespace JsonTextViewer
             {
                 return ex.ToString();
             }
+        }
+
+        private bool IsJsonContent(HttpContent rContent)
+        {
+            string type = rContent?.Headers?.ContentType?.MediaType?.ToLowerInvariant();
+            return type != null && type.Contains("json");
         }
 
         private string ReadAsJson(HttpContent content)

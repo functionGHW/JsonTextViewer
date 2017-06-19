@@ -101,8 +101,15 @@ namespace JsonTextViewer
         private string ReadAsJson(HttpContent content)
         {
             string json = content.ReadAsStringAsync().Result;
-            var obj = JsonConvert.DeserializeObject(json);
-            return obj?.ToString() ?? "null";
+            try
+            {
+                var obj = JsonConvert.DeserializeObject(json);
+                return obj?.ToString() ?? "null";
+            }
+            catch (JsonReaderException ex)
+            {
+                return $"Wrong JSON received, check format of the raw content!!!\nMessage:{ex.Message}\n\nRaw content is:\n{json}";
+            }
         }
     }
 }

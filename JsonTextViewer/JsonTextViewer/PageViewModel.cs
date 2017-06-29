@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Net.Http.Headers;
+using Microsoft.Win32;
 
 namespace JsonTextViewer
 {
@@ -103,15 +104,28 @@ namespace JsonTextViewer
             Task.Run(() =>
             {
                 Dictionary<string, string> headers;
+                bool saveAsFile = false;
                 try
                 {
-                    var param = ParseBody(RequestBody, out headers);
-                    ResponseText = requester.SendRequest(Url, Method, param, headers);
+                    var param = ParseBody(RequestBody, out headers, out saveAsFile);
+                    if (saveAsFile)
+                    {
+                        var result = requester.SendDownloadRequest(Url, Method, param, headers);
+                        SaveFile(result);
+                    }
+                    else
+                    {
+                        ResponseText = requester.SendRequest(Url, Method, param, headers);
+                    }
                     UrlHistoriesManager.Instance.RefreshUrl(Url);
                 }
                 catch (JsonException ex)
                 {
                     ResponseText = $"Request body format ERROR!\n\n{ex.Message}";
+                }
+                catch (WebRequesterException ex)
+                {
+                    ResponseText = $"Request ERROR!\n\n{ex.Message}";
                 }
                 catch (Exception ex)
                 {
@@ -120,10 +134,42 @@ namespace JsonTextViewer
             });
         }
 
+        private void SaveFile(FileResult result)
+        {
+            if (result == null)
+            {
+                ResponseText = "null";
+                return;
+            }
 
-        private HttpContent ParseBody(string body, out Dictionary<string, string> headers)
+            var saveFileDialog = new SaveFileDialog()
+            {
+                FileName = result.FileName
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                string filePath = saveFileDialog.FileName;
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                using (var fs = File.OpenWrite(filePath))
+                {
+                    using (var ns = result.FileStream)
+                    {
+                        ns.CopyTo(fs);
+                    }
+                }
+                ResponseText = $"FileName={result.FileName}\nFileSize={result.FileLength}\nLocal Path={filePath}";
+            }
+            else
+            {
+                result.FileStream?.Dispose();
+                ResponseText = "Operation Canceled.";
+            }
+        }
+
+        private HttpContent ParseBody(string body, out Dictionary<string, string> headers, out bool saveAsFile)
         {
             headers = null;
+            saveAsFile = false;
             if (body == null)
                 return null;
 
@@ -142,6 +188,7 @@ namespace JsonTextViewer
                 return null;
 
             headers = input.Headers;
+            saveAsFile = input.SaveAsFile;
             switch (input.Type)
             {
                 case "form":
@@ -226,6 +273,8 @@ namespace JsonTextViewer
         public Dictionary<string, string> Headers { get; set; }
 
         public JToken Body { get; set; }
+
+        public bool SaveAsFile { get; set; }
 
         public FileData File { get; set; }
     }

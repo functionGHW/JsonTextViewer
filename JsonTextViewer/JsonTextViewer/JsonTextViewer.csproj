@@ -68,6 +68,7 @@
     <Compile Include="UrlHistoriesManager.cs" />
     <Compile Include="ViewModelBase.cs" />
     <Compile Include="WebRequester.cs" />
+    <Compile Include="WebRequesterException.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

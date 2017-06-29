@@ -74,6 +74,8 @@ namespace JsonTextViewer
                              "    # for text content, using string replace object \n" +
                              "    body: {\n" +
                              "    },\n" +
+                             "    # for file download, set true to save response content as a file\n"+ 
+                             "    SaveAsFile: false,\n" +
                              "    # for file uploading when type is form\n" + 
                              "    file: {\n" +
                              "        # name is required\n" + 

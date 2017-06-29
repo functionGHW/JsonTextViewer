@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -18,5 +19,25 @@ namespace JsonTextViewer
     public interface IWebRequester
     {
         string SendRequest(string url, string method, HttpContent content, Dictionary<string, string> headers);
+        FileResult SendDownloadRequest(string url, string method, HttpContent content, Dictionary<string, string> headers);
+    }
+    
+    public class FileResult
+    {
+        /// <summary>
+        /// file name from headers
+        /// </summary>
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// file length from headers
+        /// </summary>
+        public long FileLength { get; set; }
+
+        /// <summary>
+        /// the file stream
+        /// </summary>
+        public Stream FileStream { get; set; }
+        
     }
 }

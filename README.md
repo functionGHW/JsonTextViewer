@@ -1,9 +1,11 @@
 # JsonTextViewer #
 a simply WPF app to format json text that return from a web request.
 
+Now support for file uploading and downloading.
 
 Dependencies:
 
++ .Net Framework v4.5
 + Newtonsoft.Json v8.0.2
 
 ## About the message body ##
@@ -15,6 +17,7 @@ For requests using POST or PUT, you can also send data by write it as "body";
 2. If you don't nedd headers, keep it empty, or just remove it from json.
 3. The type can be one of { text, form, json(application/json) }.
 4. The 'form' support file uploading, by enable the 'file' block.
+5. For file downloading request(or just want to save the result to a file), set 'SaveAsFile' to true.
 
 Example for text
 <pre>
@@ -25,8 +28,10 @@ Example for text
         },
         # type can be one of { text, form, json }
         type: "text",
+        
         # for text content, using string replace object 
-        body: " this is a text content"
+        body: " this is a text content",
+        SaveAsFile: false
     }
 </pre>
 
@@ -39,7 +44,8 @@ Example for form:
         body: {
             name: "John",
             age: 23
-        }
+        },
+        SaveAsFile: false
     }
 </pre>
 
@@ -54,6 +60,7 @@ Example for form(file uploading):
             name: "John",
             age: 23
         },
+        SaveAsFile: false,
         file: {
             name: "picture",
             path: "c:\\dir_to_file\\file_name.jpg",
@@ -73,5 +80,6 @@ Example for json:
             name: "John",
             age: 23
         }
+        SaveAsFile: false
     }
 </pre>

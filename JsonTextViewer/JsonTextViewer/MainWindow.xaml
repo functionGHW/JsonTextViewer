@@ -66,14 +66,20 @@
                      Text="{Binding RequestBody}"/>
 
                     <TextBox Grid.Row="1" 
-                     VerticalAlignment="Stretch" 
-                     HorizontalAlignment="Stretch" 
-                     IsReadOnly="True"
-                     TextWrapping="Wrap"
-                     FontFamily="Consolas"
-                     FontSize="14"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     Text="{Binding ResponseText}"/>
+                         VerticalAlignment="Stretch" 
+                         HorizontalAlignment="Stretch" 
+                         IsReadOnly="True"
+                         TextWrapping="Wrap"
+                         FontFamily="Consolas"
+                         FontSize="14"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         Text="{Binding ResponseText}">
+                        <TextBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="View in Browser" Command="{Binding ViewInWebCommand}"/>
+                            </ContextMenu>
+                        </TextBox.ContextMenu>
+                    </TextBox>
 
                 </Grid>
             </Grid>

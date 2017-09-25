@@ -40,6 +40,7 @@ namespace JsonTextViewer
                 throw new ArgumentNullException(nameof(requester));
             this.requester = requester;
             SendRequestCommand = new SimpleCommand(SendRequestCommandExecute);
+            ViewInWebCommand = new SimpleCommand(ViewInWebCommandExecute);
         }
 
         #region Properties
@@ -90,7 +91,18 @@ namespace JsonTextViewer
 
         public ICommand SendRequestCommand { get; set; }
 
+        public ICommand ViewInWebCommand { get; set; }
+
         #endregion
+
+        private void ViewInWebCommandExecute(object arg)
+        {
+            string tmpFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".html");
+            File.WriteAllText(tmpFile, this.ResponseText);
+
+            System.Diagnostics.Process.Start(tmpFile);
+        }
+
 
         private void SendRequestCommandExecute(object arg)
         {

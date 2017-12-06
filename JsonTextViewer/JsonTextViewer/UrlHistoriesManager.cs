@@ -42,7 +42,7 @@ namespace JsonTextViewer
 
         private const int maxRecordCount = 50;
 
-        public List<UrlHistory> UrlHistories { get; private set; }
+        public List<string> UrlHistories { get; private set; }
 
 
         private void LoadOrCreateFile()
@@ -52,22 +52,11 @@ namespace JsonTextViewer
 
             var history = File.ReadLines(historyFilePath)
                 .Where(item => !string.IsNullOrWhiteSpace(item))
-                .Select(CreateFromString)
-                .Where(item => item != null)
                 .Distinct()
                 .Take(maxRecordCount)
                 .ToList();
 
             UrlHistories = history;
-        }
-
-        private UrlHistory CreateFromString(string line)
-        {
-            var rowData = line.Split(new[] {"||"}, 2, StringSplitOptions.RemoveEmptyEntries);
-            if (rowData.Length != 2)
-                return null;
-
-            return new UrlHistory(rowData[0], rowData[1]);
         }
 
         public void SaveToFile()
@@ -88,12 +77,11 @@ namespace JsonTextViewer
             }
         }
 
-        public void RefreshUrl(string method, string url)
+        public void RefreshUrl(string url)
         {
-            var existItem = UrlHistories.FirstOrDefault(item => item.Method == method && item.Url == url);
-            if (existItem != null)
+            if (UrlHistories.Any(item => item == url))
             {
-                UrlHistories.Remove(existItem);
+                UrlHistories.Remove(url);
             }
             else
             {
@@ -102,49 +90,9 @@ namespace JsonTextViewer
                     UrlHistories.RemoveAt(UrlHistories.Count - 1);
                 }
             }
-            UrlHistories.Insert(0, new UrlHistory(method, url));
+            UrlHistories.Insert(0, url);
             var handler = UrlHistoriesUpdated;
             handler?.Invoke(this, EventArgs.Empty);
-        }
-    }
-
-    public class UrlHistory : IEquatable<UrlHistory>
-    {
-        public UrlHistory(string method, string url)
-        {
-            Method = method;
-            Url = url;
-        }
-
-        public string Method { get; }
-
-        public string Url { get; }
-
-        public override string ToString()
-        {
-            return $"{Method}||{Url}";
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is UrlHistory other)
-            {
-                return Equals(other);
-            }
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return ToString().GetHashCode();
-        }
-
-        public bool Equals(UrlHistory other)
-        {
-            if (other == null)
-                return false;
-
-            return Method == other.Method && Url == other.Url;
         }
     }
 }

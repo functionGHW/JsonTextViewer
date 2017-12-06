@@ -146,7 +146,7 @@ namespace JsonTextViewer
                     {
                         ResponseText = requester.SendRequest(Url, Method, param, headers);
                     }
-                    UrlHistoriesManager.Instance.RefreshUrl(Method, Url);
+                    UrlHistoriesManager.Instance.RefreshUrl(Url);
                 }
                 catch (JsonException ex)
                 {

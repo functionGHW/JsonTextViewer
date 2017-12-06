@@ -233,19 +233,26 @@ namespace JsonTextViewer
 
         private HttpContent AsFormContent(InputBody input)
         {
-            if (input.Body == null && input.File == null)
+            if (input.Body == null && input.Files == null)
                 return null;
 
             // no file to upload, using FormUrlEncodedContent
-            if (input.File == null || string.IsNullOrEmpty(input.File.Name))
+            List<KeyValuePair<string, string>> parameters;
+            if (input.Files.All(f => string.IsNullOrEmpty(f.Name)))
             {
-                var dict = input.Body?.ToObject<Dictionary<string, string>>();
-                return new FormUrlEncodedContent(dict);
+                parameters = ParseFormDatas(input.Body);
+                return new FormUrlEncodedContent(parameters);
             }
-            else
+
+            // try to upload file using MultipartFormDataContent
+            var content = new MultipartFormDataContent();
+            parameters = ParseFormDatas(input.Body);
+            foreach (var item in parameters)
             {
-                // try to upload file using MultipartFormDataContent
-                var file = input.File;
+                content.Add(new StringContent(item.Value), item.Key);
+            }
+            foreach (var file in input.Files)
+            {
                 if (string.IsNullOrEmpty(file.Name))
                     throw new InvalidDataException("file.name must be given, and value can't be null or empty.");
 
@@ -255,25 +262,39 @@ namespace JsonTextViewer
                 if (string.IsNullOrEmpty(file.FileName))
                     file.FileName = Path.GetFileName(file.Path);
 
-                var content = new MultipartFormDataContent();
-
-                var dict = input.Body?.ToObject<Dictionary<string, string>>();
-                if (dict != null)
-                {
-                    foreach (var item in dict)
-                    {
-                        content.Add(new StringContent(item.Value), item.Key);
-                    }
-                }
                 var fileContent = new StreamContent(File.OpenRead(file.Path));
                 if (!string.IsNullOrEmpty(file.Type))
                 {
                     fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.Type);
                 }
                 content.Add(fileContent, file.Name, file.FileName);
-
-                return content;
             }
+            return content;
+        }
+
+        private static List<KeyValuePair<string, string>> ParseFormDatas(JToken body)
+        {
+            var parameters = new List<KeyValuePair<string, string>>();
+            if (body != null)
+            {
+                foreach (JProperty item in body)
+                {
+                    string name = item.Name;
+                    if (item.Value is JArray values)
+                    {
+                        foreach (var val in values)
+                        {
+                            parameters.Add(new KeyValuePair<string, string>(name + "[]", val.ToString()));
+                        }
+                    }
+                    else
+                    {
+                        parameters.Add(new KeyValuePair<string, string>(name, item.Value.ToString()));
+                    }
+                }
+            }
+
+            return parameters;
         }
 
         private HttpContent AsJsonContent(InputBody input)
@@ -305,7 +326,7 @@ namespace JsonTextViewer
 
         public bool SaveAsFile { get; set; }
 
-        public FileData File { get; set; }
+        public List<FileData> Files { get; set; }
     }
 
     // for uploading file 

@@ -79,16 +79,18 @@ namespace JsonTextViewer
                               "    # for file download, set true to save response content as a file\n" +
                               "    SaveAsFile: false,\n" +
                               "    # for file uploading when type is form\n" +
-                              "    file: {\n" +
-                              "        # name is required\n" +
-                              "        #name: \"picture\",\n" +
-                              "        # path is required\n" +
-                              "        #path: \"c:\\\\dir_to_file\\\\file_name.jpg\",\n" +
-                              "        # filename is optional\n" +
-                              "        #filename: \"example.jpg\",\n" +
-                              "        # type is optional\n" +
-                              "        #type: \"application/octet-stream\"\n" +
-                              "    }\n" +
+                              "    files: [\n" +
+                              "        {\n" +
+                              "            # name is required\n" +
+                              "            #name: \"picture\",\n" +
+                              "            # path is required\n" +
+                              "            #path: \"c:\\\\dir_to_file\\\\file_name.jpg\",\n" +
+                              "            # filename is optional\n" +
+                              "            #filename: \"example.jpg\",\n" +
+                              "            # type is optional\n" +
+                              "            #type: \"application/octet-stream\"\n" +
+                              "        }\n" +
+                              "    ]\n" +
                               "}"
             };
 

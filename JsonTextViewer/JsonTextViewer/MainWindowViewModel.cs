@@ -36,7 +36,7 @@ namespace JsonTextViewer
             };
         }
 
-        public IList<string> UrlHistories { get; set; }
+        public IList<UrlHistory> UrlHistories { get; set; }
 
         public ObservableCollection<PageViewModel> TaskList { get; set; }
 
@@ -59,35 +59,39 @@ namespace JsonTextViewer
 
         private PageViewModel CreatePageViewModel()
         {
-            var vm = new PageViewModel();
-            vm.Method = "Get";
-            vm.ResponseText = "Press Enter to send request";
-            vm.Url = UrlHistoriesManager.Instance.UrlHistories.FirstOrDefault() ?? "http://www.example.com/";
-            vm.RequestBody = "# Lines start with '#' are comments and will be ignored.\n" +
-                             "# Using JSON object to add headers and create request body.\n\n" +
-                             "{\n" +
-                             "    headers: {\n" +
-                             "        # additional headers\n" +
-                             "    },\n" +
-                             "    # type can be one of { text, form, json }\n" +
-                             "    type: \"form\",\n" +
-                             "    # for text content, using string replace object \n" +
-                             "    body: {\n" +
-                             "    },\n" +
-                             "    # for file download, set true to save response content as a file\n"+ 
-                             "    SaveAsFile: false,\n" +
-                             "    # for file uploading when type is form\n" + 
-                             "    file: {\n" +
-                             "        # name is required\n" + 
-                             "        #name: \"picture\",\n" +
-                             "        # path is required\n" +
-                             "        #path: \"c:\\\\dir_to_file\\\\file_name.jpg\",\n" +
-                             "        # filename is optional\n" +
-                             "        #filename: \"example.jpg\",\n" +
-                             "        # type is optional\n" +
-                             "        #type: \"application/octet-stream\"\n" +
-                             "    }\n" +
-                             "}";
+            var firHistory = UrlHistoriesManager.Instance.UrlHistories.FirstOrDefault();
+            var vm = new PageViewModel
+            {
+                Method = firHistory?.Method ?? "Get",
+                Url = firHistory?.Url ?? "http://www.example.com/",
+                ResponseText = "Press Enter to send request",
+                RequestBody = "# Lines start with '#' are comments and will be ignored.\n" +
+                              "# Using JSON object to add headers and create request body.\n\n" +
+                              "{\n" +
+                              "    headers: {\n" +
+                              "        # additional headers\n" +
+                              "    },\n" +
+                              "    # type can be one of { text, form, json }\n" +
+                              "    type: \"form\",\n" +
+                              "    # for text content, using string replace object \n" +
+                              "    body: {\n" +
+                              "    },\n" +
+                              "    # for file download, set true to save response content as a file\n" +
+                              "    SaveAsFile: false,\n" +
+                              "    # for file uploading when type is form\n" +
+                              "    file: {\n" +
+                              "        # name is required\n" +
+                              "        #name: \"picture\",\n" +
+                              "        # path is required\n" +
+                              "        #path: \"c:\\\\dir_to_file\\\\file_name.jpg\",\n" +
+                              "        # filename is optional\n" +
+                              "        #filename: \"example.jpg\",\n" +
+                              "        # type is optional\n" +
+                              "        #type: \"application/octet-stream\"\n" +
+                              "    }\n" +
+                              "}"
+            };
+
             return vm;
         }
     }

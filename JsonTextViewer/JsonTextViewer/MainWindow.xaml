@@ -39,8 +39,20 @@
                               MinWidth="200" 
                               Height="25" ItemsSource="{Binding DataContext.UrlHistories, 
                         RelativeSource={RelativeSource AncestorType=Window}}"
+                              DisplayMemberPath="Url"
+                              SelectedValuePath="Method"
+                              SelectedValue="{Binding Method, Mode=OneTime}"
                               IsEditable="True"
-                              Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"/>
+                              Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Method}" Width="30"/>
+                                    <TextBlock Text="{Binding Url}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                         <CheckBox Margin="8,0,0,0" Content="Cookies" VerticalContentAlignment="Center" IsChecked="{Binding EnableCookies}" />

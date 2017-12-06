@@ -16,7 +16,7 @@ For requests using POST or PUT, you can also send data by write it as "body";
 1. Lines start with '#' as the first non-white space character are comments, these lines will be ignored.
 2. If you don't nedd headers, keep it empty, or just remove it from json.
 3. The type can be one of { text, form, json(application/json) }.
-4. The 'form' support file uploading, by enable the 'file' block.
+4. The 'form' support multiple files uploading, by enable the 'files' block.
 5. For file downloading request(or just want to save the result to a file), set 'SaveAsFile' to true.
 
 Example for text
@@ -30,7 +30,7 @@ Example for text
         type: "text",
         
         # for text content, using string replace object 
-        body: " this is a text content",
+        body: "this is a text content",
         SaveAsFile: false
     }
 </pre>
@@ -43,14 +43,17 @@ Example for form:
         type: "form",
         body: {
             name: "John",
-            age: 23
+            age: 23,
+            # arrays are supported
+            # final key will be "values[]"
+            values: ["one", "two", "three"]
         },
         SaveAsFile: false
     }
 </pre>
 
 
-Example for form(file uploading):
+Example for form(files uploading):
 <pre>
     {
         headers: null
@@ -61,12 +64,23 @@ Example for form(file uploading):
             age: 23
         },
         SaveAsFile: false,
-        file: {
-            name: "picture",
-            path: "c:\\dir_to_file\\file_name.jpg",
-            filename: "example.jpg",
-            type: "image/jpg"
-        }
+        files: [
+            {
+                name: "picture",
+                path: "c:\\dir_to_file\\file_name.jpg",
+                filename: "example.jpg",
+                type: "image/jpg"
+            },
+            # remove a file by removing entire file block,
+            # or just commenting the "name" property
+            {
+                # comment "name" property to ignore this file
+                #name: "another_picture",
+                path: "c:\\dir_to_file\\file_name2.jpg",
+                filename: "example2.jpg",
+                type: "image/jpg"
+            }
+        ]
     }
 </pre>
 

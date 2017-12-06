@@ -20,6 +20,7 @@ namespace JsonTextViewer
 {
     public class WebRequester : IWebRequester
     {
+
         static WebRequester()
         {
             // ignore SSL certificate, this may result to AuthenticationException exception.
@@ -33,6 +34,19 @@ namespace JsonTextViewer
                 | SecurityProtocolType.Tls11
                 | SecurityProtocolType.Tls
                 | SecurityProtocolType.Ssl3;
+
+        }
+
+        private CookieContainer cookieContainer = new CookieContainer();
+
+        private HttpClient commonClient;
+
+        private bool enableCookies;
+
+        public WebRequester()
+        {
+            enableCookies = false;
+            commonClient = CreateClient(enableCookies);
         }
 
         private static readonly HttpContent EmptyContent = new ByteArrayContent(new byte[0]);
@@ -45,7 +59,7 @@ namespace JsonTextViewer
                 throw new ArgumentNullException(nameof(method));
 
             var request = BuildRequestMessage(url, method, content, headers);
-            var client = new HttpClient();
+            var client = commonClient;
             var response = client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).Result;
             var rContent = response.Content;
             if (!response.IsSuccessStatusCode)
@@ -59,7 +73,7 @@ namespace JsonTextViewer
             }
 
             string fileName = rContent.Headers?.ContentDisposition?.FileName;
-            long fileLength = rContent.Headers.ContentLength ?? 0L;
+            long fileLength = rContent.Headers?.ContentLength ?? 0L;
 
             var result = new FileResult()
             {
@@ -80,26 +94,24 @@ namespace JsonTextViewer
             try
             {
                 var request = BuildRequestMessage(url, method, content, headers);
-                using (var client = new HttpClient())
-                {
-                    var response = client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).Result;
-                    var rContent = response.Content;
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        string textContent = IsJsonContent(rContent) ? ReadAsJson(rContent) : rContent.ReadAsStringAsync().Result;
-                        return $"Http {(int)response.StatusCode} {response.ReasonPhrase}\n{textContent}";
-                    }
-                    if (rContent == null)
-                    {
-                        return "null";
-                    }
 
-                    if (IsJsonContent(rContent))
-                    {
-                        return ReadAsJson(rContent);
-                    }
-                    return rContent.ReadAsStringAsync().Result;
+                var response = commonClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).Result;
+                var rContent = response.Content;
+                if (!response.IsSuccessStatusCode)
+                {
+                    string textContent = IsJsonContent(rContent) ? ReadAsJson(rContent) : rContent.ReadAsStringAsync().Result;
+                    return $"Http {(int)response.StatusCode} {response.ReasonPhrase}\n{textContent}";
                 }
+                if (rContent == null)
+                {
+                    return "null";
+                }
+
+                if (IsJsonContent(rContent))
+                {
+                    return ReadAsJson(rContent);
+                }
+                return rContent.ReadAsStringAsync().Result;
             }
             catch (Exception ex)
             {
@@ -148,6 +160,29 @@ namespace JsonTextViewer
             {
                 return $"Wrong JSON received, check format of the raw content!!!\nMessage:{ex.Message}\n\nRaw content is:\n{json}";
             }
+        }
+
+        public void SetCookies(bool enable)
+        {
+            if (enable == enableCookies)
+                return;
+
+            enableCookies = enable;
+            commonClient = CreateClient(enable);
+        }
+
+        private HttpClient CreateClient(bool useCookies)
+        {
+            var clienthandler = new HttpClientHandler
+            {
+                AllowAutoRedirect = true,
+                UseCookies = useCookies,
+            };
+            if (useCookies)
+            {
+                clienthandler.CookieContainer = cookieContainer;
+            }
+            return new HttpClient(clienthandler);
         }
     }
 }

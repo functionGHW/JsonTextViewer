@@ -6,7 +6,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:JsonTextViewer"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="700" Width="800">
+        Title="MainWindow" Height="700" Width="1024">
 
     <Window.Resources>
         <DataTemplate x:Key="taskTemplate">
@@ -20,7 +20,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="75"/>
                         <ColumnDefinition Width="*" MinWidth="200" />
-                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="160" />
                     </Grid.ColumnDefinitions>
                     <ComboBox Grid.Column="0" 
                       Margin="8,0,0,0" 
@@ -42,12 +42,11 @@
                               IsEditable="True"
                               Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <Button Grid.Column="2" 
-                    Margin="8,0,8,0" 
-                    Content="Send(Enter)" 
-                    Height="25" 
-                    IsDefault="True"
-                    Command="{Binding SendRequestCommand}"/>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <CheckBox Margin="8,0,0,0" Content="Cookies" VerticalContentAlignment="Center" IsChecked="{Binding EnableCookies}" />
+                        <Button Margin="8,0,8,0" Content="Send(Enter)" Height="25" IsDefault="True" 
+                                Command="{Binding SendRequestCommand}"/>
+                    </StackPanel>
                 </Grid>
 
                 <Grid Grid.Row="1">

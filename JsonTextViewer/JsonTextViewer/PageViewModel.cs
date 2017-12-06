@@ -29,6 +29,7 @@ namespace JsonTextViewer
         private string method;
         private string requestBody;
         private string responseText;
+        private bool enableCookies;
 
         public PageViewModel() : this(new WebRequester())
         {
@@ -41,6 +42,8 @@ namespace JsonTextViewer
             this.requester = requester;
             SendRequestCommand = new SimpleCommand(SendRequestCommandExecute);
             ViewInWebCommand = new SimpleCommand(ViewInWebCommandExecute);
+
+            EnableCookies = true;
         }
 
         #region Properties
@@ -82,6 +85,20 @@ namespace JsonTextViewer
             {
                 method = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public bool EnableCookies
+        {
+            get { return enableCookies; }
+            set
+            {
+                if (value != enableCookies)
+                {
+                    enableCookies = value;
+                    OnPropertyChanged();
+                    requester.SetCookies(enableCookies);
+                }
             }
         }
 

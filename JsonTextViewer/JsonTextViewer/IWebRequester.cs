@@ -18,6 +18,9 @@ namespace JsonTextViewer
 {
     public interface IWebRequester
     {
+
+        void SetCookies(bool enable);
+
         string SendRequest(string url, string method, HttpContent content, Dictionary<string, string> headers);
         FileResult SendDownloadRequest(string url, string method, HttpContent content, Dictionary<string, string> headers);
     }

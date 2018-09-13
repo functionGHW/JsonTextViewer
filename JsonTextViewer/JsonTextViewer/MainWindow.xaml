@@ -63,7 +63,7 @@
                      FontFamily="Consolas"
                      FontSize="14"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     Text="{Binding RequestBody}"/>
+                     Text="{Binding RequestBody, UpdateSourceTrigger=PropertyChanged}"/>
                     
                     <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"/>
                     

@@ -66,29 +66,29 @@ namespace JsonTextViewer
             vm.RequestBody = "# Lines start with '#' are comments and will be ignored.\n" +
                              "# Using JSON object to add headers and create request body.\n\n" +
                              "{\n" +
-                             "    headers: {\n" +
-                             "        # additional headers\n" +
-                             "    },\n" +
-                             "    # type can be one of { text, form, json }\n" +
-                             "    type: \"form\",\n" +
-                             "    # for text content, using string replace object \n" +
-                             "    body: {\n" +
-                             "    },\n" +
-                             "    # for file download, set true to save response content as a file\n" +
-                             "    SaveAsFile: false,\n" +
-                             "    # for file uploading when type is form\n" +
-                             "    files: [\n" +
-                             "        {\n" +
-                             "            # name is required\n" +
-                             "            #name: \"picture\",\n" +
-                             "            # path is required\n" +
-                             "            #path: \"c:\\\\dir_to_file\\\\file_name.jpg\",\n" +
-                             "            # filename is optional\n" +
-                             "            #filename: \"example.jpg\",\n" +
-                             "            # type is optional\n" +
-                             "            #type: \"application/octet-stream\"\n" +
-                             "        }\n" +
-                             "    ]\n" +
+                             "  headers: {\n" +
+                             "    # additional headers\n" +
+                             "  },\n" +
+                             "  # type can be one of { text, form, json }\n" +
+                             "  type: \"form\",\n" +
+                             "  # for text content, using string replace object \n" +
+                             "  body: {\n" +
+                             "  },\n" +
+                             "  # for file download, set true to save response content as a file\n" +
+                             "  SaveAsFile: false,\n" +
+                             "  # for file uploading when type is form\n" +
+                             "  files: [\n" +
+                             "    {\n" +
+                             "      # name is required\n" +
+                             "      #name: \"picture\",\n" +
+                             "      # path is required\n" +
+                             "      #path: \"c:\\\\dir_to_file\\\\file_name.jpg\",\n" +
+                             "      # filename is optional\n" +
+                             "      #filename: \"example.jpg\",\n" +
+                             "      # type is optional\n" +
+                             "      #type: \"application/octet-stream\"\n" +
+                             "    }\n" +
+                             "  ]\n" +
                              "}\n";
             return vm;
         }

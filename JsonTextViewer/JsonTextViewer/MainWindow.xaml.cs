@@ -37,5 +37,28 @@ namespace JsonTextViewer
             base.OnClosing(e);
             UrlHistoriesManager.Instance.SaveToFile();
         }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Tab)
+            {
+                if (sender is TextBox tb)
+                {
+                    const string spaces = "  ";
+                    string tmp = tb.Text;
+                    if (tb.SelectionLength > 0)
+                    {
+                        // remove selected text before inserting,
+                        // just like replace selected text with spaces
+                        tmp = tmp.Remove(tb.SelectionStart, tb.SelectionLength);
+                    }
+                    tmp = tmp.Insert(tb.CaretIndex, spaces);
+                    int newIndex = tb.CaretIndex + spaces.Length;
+                    tb.Text = tmp;
+                    tb.CaretIndex = newIndex;
+                    e.Handled = true;
+                }
+            }
+        }
     }
 }

@@ -62,6 +62,7 @@
                      TextWrapping="Wrap"
                      FontFamily="Consolas"
                      FontSize="14"
+                     PreviewKeyDown="TextBox_KeyDown"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      Text="{Binding RequestBody, UpdateSourceTrigger=PropertyChanged}"/>
                     

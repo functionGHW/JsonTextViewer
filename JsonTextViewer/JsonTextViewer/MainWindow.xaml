@@ -79,6 +79,7 @@
                          Text="{Binding ResponseText}">
                         <TextBox.ContextMenu>
                             <ContextMenu>
+                                <MenuItem Header="Try format as JSON" Command="{Binding FormatJsonCommand}"/>
                                 <MenuItem Header="View in Browser" Command="{Binding ViewInWebCommand}"/>
                             </ContextMenu>
                         </TextBox.ContextMenu>

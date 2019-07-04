@@ -42,6 +42,7 @@ namespace JsonTextViewer
             this.requester = requester;
             SendRequestCommand = new SimpleCommand(SendRequestCommandExecute);
             ViewInWebCommand = new SimpleCommand(ViewInWebCommandExecute);
+            FormatJsonCommand = new SimpleCommand(FormatJsonCommandExecute);
 
             EnableCookies = true;
         }
@@ -110,6 +111,8 @@ namespace JsonTextViewer
 
         public ICommand ViewInWebCommand { get; set; }
 
+        public ICommand FormatJsonCommand { get; set; }
+
         #endregion
 
         private void ViewInWebCommandExecute(object arg)
@@ -118,6 +121,21 @@ namespace JsonTextViewer
             File.WriteAllText(tmpFile, this.ResponseText);
 
             System.Diagnostics.Process.Start(tmpFile);
+        }
+
+        private void FormatJsonCommandExecute(object arg)
+        {
+            string content = ResponseText;
+            try
+            {
+                content = JToken.Parse(content).ToString();
+                ResponseText = content;
+            }
+            catch (JsonReaderException ex)
+            {
+                ResponseText = $"Format ERROR! Content is not correct JSON string.\n\n{ex.Message}\n \n=======================\n{content}";
+            }
+            
         }
 
 

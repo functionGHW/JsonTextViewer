@@ -284,7 +284,7 @@ namespace JsonTextViewer
                     {
                         foreach (var val in values)
                         {
-                            parameters.Add(new KeyValuePair<string, string>(name + "[]", val.ToString()));
+                            parameters.Add(new KeyValuePair<string, string>(name, val.ToString()));
                         }
                     }
                     else

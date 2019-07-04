@@ -124,9 +124,14 @@ namespace JsonTextViewer
             var request = new HttpRequestMessage(new HttpMethod(method), url);
             if (headers != null)
             {
+                var requestHeader = (System.Net.Http.Headers.HttpHeaders)content.Headers ?? request.Headers;
                 foreach (var item in headers)
                 {
-                    request.Headers.Add(item.Key, item.Value);
+                    if (requestHeader.Contains(item.Key))
+                    {
+                        requestHeader.Remove(item.Key);
+                    }
+                    requestHeader.Add(item.Key, item.Value);
                 }
             }
             switch (method.ToLowerInvariant())

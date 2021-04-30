@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace JsonTextViewer
 {
@@ -36,6 +37,21 @@ namespace JsonTextViewer
                 | SecurityProtocolType.Ssl3;
 
         }
+
+        private static readonly string[] ContentHeaderNames = {
+            "Allow",
+            "Content-Type",
+            "Content-Disposition",
+            "Content-Encoding",
+            "Content-Language",
+            "Content-Length",
+            "Content-Location",
+            "Content-MD5",
+            "Content-Range",
+            "Content-Type",
+            "Expires",
+            "Last-Modified",
+        };
 
         private CookieContainer cookieContainer = new CookieContainer();
 
@@ -124,14 +140,12 @@ namespace JsonTextViewer
             var request = new HttpRequestMessage(new HttpMethod(method), url);
             if (headers != null)
             {
-                var requestHeader = (System.Net.Http.Headers.HttpHeaders)content.Headers ?? request.Headers;
+                HttpHeaders requestHeaders = request.Headers;
+                HttpHeaders contentHeaders = content.Headers;
                 foreach (var item in headers)
                 {
-                    if (requestHeader.Contains(item.Key))
-                    {
-                        requestHeader.Remove(item.Key);
-                    }
-                    requestHeader.Add(item.Key, item.Value);
+                    var h = ContentHeaderNames.Contains(item.Key, StringComparer.OrdinalIgnoreCase) ? contentHeaders : requestHeaders;
+                    AddHeader(h, item.Key, item.Value);
                 }
             }
             switch (method.ToLowerInvariant())
@@ -144,6 +158,15 @@ namespace JsonTextViewer
             }
 
             return request;
+        }
+
+        private static void AddHeader(HttpHeaders headers, string key, string value)
+        {
+            if (headers.Contains(key))
+            {
+                headers.Remove(key);
+            }
+            headers.Add(key, value);
         }
 
         private bool IsJsonContent(HttpContent rContent)

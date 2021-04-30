@@ -135,7 +135,7 @@ namespace JsonTextViewer
             {
                 ResponseText = $"Format ERROR! Content is not correct JSON string.\n\n{ex.Message}\n \n=======================\n{content}";
             }
-            
+
         }
 
 
@@ -197,20 +197,50 @@ namespace JsonTextViewer
             {
                 string filePath = saveFileDialog.FileName;
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                string readableTotalSize = ConvertToReadableSize(result.FileLength);
                 using (var fs = File.OpenWrite(filePath))
                 {
                     using (var ns = result.FileStream)
                     {
+                        fs.SetLength(0);
+
+                        var buffer = new byte[81920];
+                        long wroteSize = 0;
+                        int count = 0;
+                        while ((count = ns.Read(buffer, 0, buffer.Length)) != 0)
+                        {
+                            fs.Write(buffer, 0, count);
+                            wroteSize += count;
+                            ResponseText = $"downlaoding...{ConvertToReadableSize(wroteSize)}/{readableTotalSize}";
+                        }
                         ns.CopyTo(fs);
                     }
                 }
-                ResponseText = $"FileName={result.FileName}\nFileSize={result.FileLength}\nLocal Path={filePath}";
+                ResponseText = $"FileName={result.FileName}\nFileSize={result.FileLength}({readableTotalSize})\nLocal Path={filePath}";
             }
             else
             {
                 result.FileStream?.Dispose();
                 ResponseText = "Operation Canceled.";
             }
+        }
+
+        private string ConvertToReadableSize(long size)
+        {
+            const long KB = 1024;
+            const long MB = 1024 * KB;
+            const long GB = 1024 * MB;
+
+            if (size > 4 * GB)
+                return ((double)size / GB).ToString("0.##") + "GB";
+
+            if (size > 10 * MB)
+                return ((double)size / MB).ToString("0.##") + "MB";
+
+            if (size > 10 * KB)
+                return ((double)size / KB).ToString("0.##") + "KB";
+
+            return size.ToString() + "Bytes";
         }
 
         private HttpContent ParseBody(string body, out Dictionary<string, string> headers, out bool saveAsFile)
